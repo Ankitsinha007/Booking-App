@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appointment App</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+    <div>
+        <label for="name" >Name:</label>
+        <input type="text" id="name" required>
+    </div>
+    <div>
+        <label for="email" >Email:</label>
+        <input type="email" id="email" required>
+    </div>
+    <div>
+        <label for="phone" >Phone:</label>
+        <input type="tel" id="phone" required>
+    </div>
+    <button onclick="addAppointment()">Add Appointment</button>
+
+    <div id="appointments-container"></div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.0/axios.min.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const appointmentsContainer = document.getElementById('appointments-container');
+            
+            // Load existing appointments from local storage
+            const appointments = JSON.parse(localStorage.getItem('appointments')) || [];
+
+            function saveAppointments() {
+                // localStorage.setItem('appointments', JSON.stringify(appointments));
+                axios.post("https://crudcrud.com/api/44df202dafd14218bd88605972ff50de/appoinmentbook",appointments )
+                .then(res => console.log(res))
+                .catch(err => console.log(err))
+            }
+
+            function renderAppointments() {
+                appointmentsContainer.innerHTML = "";
+                appointments.forEach(appointment => {
+                    const card = document.createElement('div');
+                    card.className = 'appointment-card';
+                    card.innerHTML = `
+                        <p><strong>Name:</strong> ${appointment.name}</p>
+                        <p><strong>Email:</strong> ${appointment.email}</p>
+                        <p><strong>Phone:</strong> ${appointment.phone}</p>
+                        <button class="btn" onclick="editAppointment(${appointment.id})">Edit</button>
+                        <button class="btn" onclick="deleteAppointment(${appointment.id})">Delete</button>
+                    `;
+                    appointmentsContainer.appendChild(card);
+                });
+            }
+
+            window.addAppointment = function() {
+                const name = document.getElementById('name').value;
+                const email = document.getElementById('email').value;
+                const phone = document.getElementById('phone').value;
+
+                if (name && email && phone) {
+                    const newAppointment = {
+                        id: new Date().getTime(),
+                        name,
+                        email,
+                        phone,
+                    };
+
+                    appointments.push(newAppointment);
+                    saveAppointments();
+                    renderAppointments();
+
+                    // Clear input fields
+                    document.getElementById('name').value = '';
+                    document.getElementById('email').value = '';
+                    document.getElementById('phone').value = '';
+                } else {
+                    alert('Please fill in all fields.');
+                }
+            };
+
+            window.editAppointment = function(id) {
+                const appointment = appointments.find(app => app.id === id);
+                if (appointment) {
+                    const newName = prompt('Enter new name:', appointment.name);
+                    const newEmail = prompt('Enter new email:', appointment.email);
+                    const newPhone = prompt('Enter new phone number:', appointment.phone);
+
+                    if (newName !== null && newEmail !== null && newPhone !== null) {
+                        appointment.name = newName;
+                        appointment.email = newEmail;
+                        appointment.phone = newPhone;
+                        saveAppointments();
+                        renderAppointments();
+                    }
+                }
+            };
+
+            window.deleteAppointment = function(id) {
+                const confirmed = confirm('Are you sure you want to delete this appointment?');
+                if (confirmed) {
+                    const index = appointments.findIndex(appointment => appointment.id === id);
+                    if (index !== -1) {
+                        appointments.splice(index, 1);
+                        saveAppointments();
+                        renderAppointments();
+                    }
+                }
+            };
+
+            // Initial rendering
+            renderAppointments();
+        });
+    </script>
+</body>
+</html>
