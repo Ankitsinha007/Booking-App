@@ -37,7 +37,7 @@
 
             function saveAppointments() {
                 // localStorage.setItem('appointments', JSON.stringify(appointments));
-                axios.post("https://crudcrud.com/api/44df202dafd14218bd88605972ff50de/appoinmentbook",appointments )
+                axios.post("https://crudcrud.com/api/44df202dafd14218bd88605972ff50de/appoinmentbook",appointmentsContainer )
                 .then(res => console.log(res))
                 .catch(err => console.log(err))
             }
