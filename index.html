@@ -37,12 +37,24 @@
 
             function saveAppointments() {
                 // localStorage.setItem('appointments', JSON.stringify(appointments));
-                axios.post("https://crudcrud.com/api/44df202dafd14218bd88605972ff50de/appoinmentbook",appointmentsContainer )
-                .then(res => console.log(res))
+                axios.post("https://crudcrud.com/api/8d5f4118edf241d59029db4f8e1c7c96/appoinmentbook",appointmentsContainer)
+                .then((res) => {console.log(res)
+                    for(let i=0; i<res.data.length; i++){
+                        appointmentsContainer(res.data[i]);
+                    }
+                })
                 .catch(err => console.log(err))
             }
 
             function renderAppointments() {
+
+                axios.get("https://crudcrud.com/api/8d5f4118edf241d59029db4f8e1c7c96/appoinmentbook")
+                .then((res) => {
+                    console.log(res)
+                    
+                })
+                .catch(err =>console.log(err))
+
                 appointmentsContainer.innerHTML = "";
                 appointments.forEach(appointment => {
                     const card = document.createElement('div');
@@ -59,6 +71,9 @@
             }
 
             window.addAppointment = function() {
+
+                
+
                 const name = document.getElementById('name').value;
                 const email = document.getElementById('email').value;
                 const phone = document.getElementById('phone').value;
